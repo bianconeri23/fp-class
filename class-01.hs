@@ -1,6 +1,6 @@
 -- IT314. Функциональное программирование
 -- Занятие 1
-
+import System.Random
 -- 1) Функция без параметров (= константа)
 
 hello :: String -- типовая аннотация (сигнатура)
@@ -68,11 +68,11 @@ avg3 11 13 215
    обращая внимание на обозначения и приоритеты операций, стандартные функции,
    расстановку скобок:
 
-    2 + 3					5
+    2 + 3						5
     mod 10 4					2
     10 `mod` 4					2
     True && 5 < 10				True
-    5 < 7 || 10 > 3 				True
+    5 < 7 || 10 > 3 			True
     sqrt (-2)					NaN
     sqrt (sqrt 16)				2.0
     let x = 4 in (sin x)^2 + (cos x)^2  	1.0
@@ -80,7 +80,7 @@ avg3 11 13 215
     7^(-1)					*** Exception: Negative exponent
     error "AAAA!!!!"				*** Exception: AAAA!!!!
     12345^54321					<число>
-    2 < 3 || 9999954321^99912345 > 12345^54321  True
+    2 < 3 || 9999954321^99912345 > 12345^54321  	True
 
 -}
 
@@ -192,6 +192,7 @@ gcd' a b = if b/=0 then gcd' b (a `mod` b) else a
 --    если номер неправильный, генерируется исключение (функция error).
 dayOfWeek :: Int -> String
 dayOfWeek 1 = "Monday"
+dayOfWeek 7 = "Sunday"
 dayOfWeek _ = error("undefined")
 
 
@@ -222,7 +223,11 @@ eval_f a
 -- б) Написать функцию, возвращающую текстовую характеристику ("hot", "warm", "cool", "cold")
 -- по заданному значению температуры в градусах Цельсия.
 describeTemperature :: Double -> String
-describeTemperature = undefined
+describeTemperature a
+				|a>30 = "hot"
+				|a<(-7) = "cold"
+				|a<7 ="cool"
+				|otherwise = "warm"
 
 {- 
    в) (*) Дан список температур в градусах Фаренгейта. Вывести для каждого значения
@@ -244,32 +249,46 @@ sum_n n
   | otherwise = error "n should be >= 1"
 
 -- а) Вычислить сумму всех целых чисел от a до b включительно.
-sum_ab = undefined
+sum_ab a b
+	| a==b = a
+	| a<b = a+ sum_ab (a+1) b
+	| otherwise = error "b < a"
 
 {-
    б) Числовая последовательность определяется следующим образом:
       a1 = 1, a2 = 2, a3 = 3, a_k = a_{k−1} + a_{k−2} − 2*a_{k−3}, k = 4, 5, ...
       Вычислить её n-й элемент.
 -}
-eval_a_n = undefined
+eval_a_n 1=1
+eval_a_n 2=2
+eval_a_n 3=3
+eval_a_n n = eval_a_n (n-1) +eval_a_n (n-2) - 2*eval_a_n(n-3)
 
 -- в) Вычислить, пользуясь рекурсией, n-ю степень числа a (n - целое):
-pow = undefined
+pow a 1 = a
+pow a n = a * pow a (n-1)
 
 -- г) Пользуясь ранее написанной функцией pow, вычислить сумму: 1^k + 2^k + ... + n^k.
-sum_nk = undefined
+sum_nk 1 k = 1
+sum_nk n k = pow n k + sum_nk (n-1) k
 
 -- д) Сумма факториалов чисел от 1 до n.
 sum_fact 1 = 1
-sum_fact n = undefined
+sum_fact n = fact n + sum_fact(n-1)
   where
-    fact n = undefined
+    fact 1 = 1
+    fact n = n* fact(n-1)
 
 -- е) Количество цифр целого числа
-number_digits = undefined
+number_digits n
+	|n>9 = number_digits (div n 10) +1
+	|otherwise=1
 
 -- ж) Проверить, является ли заданное число простым.
-isPrime = undefined
+--isPrime n 1=(fmap(+2) $ randomRIO(1,10))
+--isPrime n s 
+--	|n>(fmap(+2) $ randomRIO(1,10)) =(fmap(+2) $ randomRIO(1,10)) 
+	
 
 -- 8) Разное
 
