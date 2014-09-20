@@ -300,6 +300,9 @@ number_digits n
   а 1200 и 2000 — являются).
 -}
 
-nDays year = undefined
+nDays year = if isLeap year then 366 else 365
   where
-    isLeap = undefined
+    isLeap year 
+	|mod year 4==0 && mod year 100==0 && mod year 400 /=0 =False
+	|mod year 4==0 =True
+	|otherwise=error("error")
