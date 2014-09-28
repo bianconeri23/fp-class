@@ -1,10 +1,12 @@
+import Data.List
+import Data.Char
 {-
 Явная рекурсия в решениях хотя и допускается, но не приветствуется. Старайтесь обходиться стандартными
 функциями, используя при этом создание функций «на лету». Пытайтесь максимально упростить уже написанные
 решения, применяя подходящие функции из модуля Data.List и любых других модулей. Перед выполнением заданий
 изучите примеры из лекции по функциям высшего порядка. 
 -}
-import Data.List
+
 {-
  1. Простейшие задачи на применение функций map и filter.
  1.1 Преобразовать данный список целых чисел следующим образом:
@@ -28,12 +30,23 @@ f11d k = filter(<=k)
 f11e = filter(<0)
 
 f11f =filter (\x -> if  (even x) && (x>0) then False else True)
+
 {-
  1.2 Дан список декартовых координат точек на плоскости (пар вещественных чисел).
      Преобразовать его следующим образом:
   a) отфильтровать список так, чтобы в нём остались точки из заданной координатной четверти;
   b) преобразовать декартовы координаты в полярные.
 -}
+watqart k (x,y) 
+	|x>0 && y>0 && k==1 = True
+	|x>0 && y<0 && k==4 = True
+	|x<0 && y>0 && k==2 = True
+	|x<0 && y<0 && k==4 = True
+	|otherwise = False
+
+f12a k = filter (watqart k)
+
+f12b = map (\(x,y)-> x^2+y^2)
 
 {-
  1.3 Дан список слов.
@@ -43,9 +56,11 @@ f11f =filter (\x -> if  (even x) && (x>0) then False else True)
 -}
 
 f13a :: [String] -> [String]
-f13a = map undefined
+f13a = map (map (toUpper))
 
---f13b = filter(length <10)
+f13b k = filter (\x -> length x == k)
+
+f13c a = filter (\x -> head x == a)
 
 {-
 2. Формирование числовых последовательностей (iterate).
@@ -57,7 +72,19 @@ f13a = map undefined
 -}
 
 nats :: [Integer]
-nats = iterate undefined 0
+nats = iterate (+1) 0
+
+f2b = iterate (+2) 0
+
+f2c = iterate next 1
+	where next n = (1+n-1)/2
+
+f2d = take 26 $ iterate next 'a'
+	where next a=chr $ ord a +1
+
+
+	
+	 
 
 {-
 3. Группировка списков.
@@ -70,13 +97,25 @@ nats = iterate undefined 0
      длиной n элементов со сдвигом относительно предыдущего подсписка на m элементов.
   e) Дан список. Определить длину самого длинного подсписка, содержащего подряд идущие одинаковые элементы.
 -}
+f3a xs = groupBy(\x y-> (isDigit x && isDigit y) || (isLetter x && isLetter y)) xs
 
+f3b xs = groupBy(\x y-> watqart' x == watqart' y) xs
+	where watqart' (x,y)
+		|x>0 && y>0 = 1 
+		|x>0 && y<0 = 4 
+		|x<0 && y>0 = 2  
+		|otherwise = 3	
+
+f3c xs n=map (take n) ( takeWhile ( not . null ) $iterate (drop n) xs)
+		
 f3d :: [a] -> Int -> Int -> [[a]]
-f3d xs n m = undefined
+f3d xs n m = map (take n) ( takeWhile ( not . null ) $iterate (drop m) xs)
 
 -- Должно быть True
 test_f3d = f3d [1..10] 4 2 == [[1,2,3,4],[3,4,5,6],[5,6,7,8],[7,8,9,10],[9,10]]
 
+f3e xs =maximum $ length' $ groupBy(\x y ->x==y) xs
+	where length' xs=map(length) xs
 {-
 4. Разные задачи.
  a) Дан текст в виде строки символов, содержащий среди прочего числовые данные. Посчитать количество
@@ -89,3 +128,10 @@ test_f3d = f3d [1..10] 4 2 == [[1,2,3,4],[3,4,5,6],[5,6,7,8],[7,8,9,10],[9,10]]
     называется элемент, больший своих соседей.
  e) Дан список. Продублировать все его элементы.
 -}
+f4a s=length $ filter (not.null) $ map(filter isDigit)(groupBy(\x y -> isDigit x && isDigit y) s)
+
+fibs = 0 : 1 : zipWith (+) fibs (tail fibs)
+
+f4b from to pred=sum $filter(pred) $ drop from $ takeWhile(<to) fibs
+
+f4e=concatMap (replicate 2)
