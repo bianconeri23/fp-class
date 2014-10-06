@@ -1,3 +1,7 @@
+
+	import Data.Char
+	import System.Random
+	import System.IO.Unsafe
 {-
   Все задачи в этом задании должны решаться исключительно с помощью свёрток.
   Явная рекурсия не допускается. Если в решении в качестве вспомогательной
@@ -24,7 +28,37 @@
      функции должно быть значение, возвращаемое по умолчанию).
 -}
 
-{-
+	f1a= foldl (\acc x->acc + if mod x 2==0 then x else 0) 0
+	
+	f1a_test1 = f1a [1,1,1,1,1,1,1,1,1,23]==0
+	f1a_test2 = f1a[1,2,23,23,23,24,66,96]==188
+	f1a_test3 = f1a[2,2,2,2,224,24]==256
+
+	f1b xs =(foldl (+) 0 xs ,foldl(*) 1 xs)
+
+	f1b_test1 = f1b [1,2,3]==(6,6)
+	f1b_test2 = f1b [1,1,1,1,1,1]==(6,1)
+	f1b_test3 = f1b [23,22.23,1123.23]==(1168.46,574296.2667)
+	
+	f1c xs = avg' $ (foldl(\(s,c) x -> (s+x,c+1)) (0,0) xs) 
+	avg' (x,y)=x/y
+	
+	f1c_test1 = f1c [1,2,3] == (1+2+3)/3
+	f1c_test2 = f1c [1,1,1,1,1,1,0]==0.8571428571428571
+	f1c_test3 = f1c [1.23,23.114,113.22]==45.85466666666667
+
+	f1d (x:xs) = foldl (min) x xs
+	
+	f1d_test1 = f1d [1,2,3,4,5,6,6666] == 1
+	f1d_test2 = f1d [23,555,453,10,234,23,23,23] == 10
+	f1d_test3 = f1d [23,4,1,2,3,0,4,2,34,-23] == -23
+
+	f1e def xs = foldl(\m x -> if mod x 2==1 then (if (x>m) && (m/=def) then m else x) else m) def xs
+
+	f1e_test1 = f1e 23 [] == 23
+	f1e_test2 = f1e 23 [24,2,6,8,2323,4,6,80,-2321,14] ==  -2321
+	f1e_test3 = f1e 23 [23] == 23
+ {-
  2. Свёртки, формирующие списки
   a) Сформировать список, содержащий каждый второй элемент исходного.
   b) Сформировать список, содержащий первые n элементов исходного.
@@ -41,7 +75,47 @@
   n) Даны два списка одинаковой длины. Сформировать список, состоящий из результатов применения
      заданной функции двух аргументов к соответствующим элементам исходных списков.
 -}
+ 
+	f2a xs = reverse' $ snd $ foldl(\ (c,xs) x -> if c==2 then (1,x:xs) else (2,xs)) (1,[]) xs
+	reverse' = foldl (\ acc x -> x:acc) []
+	
+	f2a_test1 = f2a [1,2,3,4,5,6,7] == [2,4,6]
+	f2a_test2 = f2a [23,4,23,55,12,32,4,64] == [4,55,32,64]
+	f2a_test3 = f2a [1] == []
 
+	f2b xs n = reverse' $ snd $ foldl(\ (c,xs) x ->if c<n then (c+1,x:xs) else (c,xs)) (0,[]) xs
+	
+	f2b_test1 = f2b [1,2,4,5,6,234,23] 10 == [1,2,4,5,6,234,23]
+	f2b_test2 = f2b [1,1,1,1,1,23,2,34,12,3123,123,123,4123,1231] 6 == [1,1,1,1,1,23]
+	--f2b_test3 = f2b [1..] 10
+	 
+	f2c xs n = snd $ foldr(\ x (c,xs)  ->if c<n then (c+1,x:xs) else (c,xs)) (0,[]) xs
+	
+	f2c_test1 = f2c [1,2,4,5,6,234,23] 10 == [1,2,4,5,6,234,23]
+	f2c_test2 = f2c [1,1,1,1,1,23,2,34,12,3123,123,123,4123,1231] 6 == [12,3123,123,123,4123,1231]
+	--f2b_test3 = f2b [1..] 10
+	
+	f2d (x:xs) = reverse' $ fst $ foldl(\(acc,c) x -> if x > c then (x:acc,x) else (acc,x) ) ([x],x) xs
+	
+	f2d_test1 = f2d [1,2,3,4,55,44,33,22,23,0] == [1,2,3,4,55,23]
+	f2d_test2 = f2d [1,1,1,1,1,1,1,11,0,0] == [1,11]
+	f2d_test3 = f2d [1..1000] == [1..1000]
+	
+	f2e (x:xs) = reverse'$ fst' $ foldl(\(acc,l,c) x -> if c < x && c < l then (c:acc,c,x) else (acc,c,x) ) ([],x,x) xs
+	fst' (x,y,z) = x
+	
+	f2e_test1 = f2e [1..23] == []
+	f2e_test2 = f2e [1,34,33,123,124,125,23,142] == [33,23]
+	f2e_test3 = f2e [33,1,3] == [1]
+	
+	f2f xs = reverse' $snd $ foldl (myWords) ([],[]) (xs++" ")
+		where myWords  (word,list) c
+			  |(not.isSpace) c =(c:word,list)
+			  |word/=[] =([],(reverse' $ word):list)
+			  |otherwise = ([],list)
+	f2f_test1 = f2f "asd asd     asd    wwww 123" == ["asd","asd","asd","wwww","123"]
+	f2f_test2 = f2f "      asd               sad      " ==["asd","sad"]
+	
 {-
  3. Использование свёртки как носителя рекурсии (для запуска свёртки можно использовать список типа [1..n]).
   a) Найти сумму чисел от a до b.
@@ -51,6 +125,26 @@
      n слагаемых).
   e) Проверить, является ли заданное целое число простым.
 -}
+	f3a a b = myLast $ scanl (+) 0 [a..b] 
+	myLast xs = foldl(\ _ x ->x) 0 xs
+	
+	f3a_test1 = f3a 23 23 == 23
+	f3a_test2 = f3a 1 100==5050
+	f3a_test3 = f3a 0 0 == 0
+	
+	f3b a b = myLast $ scanl (\acc x -> acc*x) 1 [a..b]
+	
+	f3b_test1 = f3b 0 10000 == 0
+	f3b_test2 = f3b 1 10 == 3628800
+	f3b_test3 = f3b 16 23 == 19769460480
+	
+	 
+	c x a = unsafePerformIO (getStdRandom (randomR (x, a)))
+	
+	f3e n = if isPrimeProb n 123 == True then "Probably,Prime" else "Not Prime"
+	
+	isPrimeProb n v = if v > 0 then (isPrime n) && (isPrimeProb n (v-1)) else True
+	isPrime n = if ((c 2 (n-1))^(n-1)) `mod` n  == 1 then True else False
 
 {-
  4. Решить задачу о поиске пути с максимальной суммой в треугольнике (см. лекцию 3) при условии,
