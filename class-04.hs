@@ -1,5 +1,7 @@
 
 	import Data.Char
+	import System.Random
+	import System.IO.Unsafe
 {-
   Все задачи в этом задании должны решаться исключительно с помощью свёрток.
   Явная рекурсия не допускается. Если в решении в качестве вспомогательной
@@ -136,6 +138,14 @@
 	f3b_test2 = f3b 1 10 == 3628800
 	f3b_test3 = f3b 16 23 == 19769460480
 	
+	 
+	c x a = unsafePerformIO (getStdRandom (randomR (x, a)))
+	
+	f3e n = if isPrimeProb n 123 == True then "Probably,Prime" else "Not Prime"
+	
+	isPrimeProb n v = if v > 0 then (isPrime n) && (isPrimeProb n (v-1)) else True
+	isPrime n = if ((c 2 (n-1))^(n-1)) `mod` n  == 1 then True else False
+
 {-
  4. Решить задачу о поиске пути с максимальной суммой в треугольнике (см. лекцию 3) при условии,
    что необходимо дополнительно найти сам путь (к примеру, в виде закодированных направлений спуска:
